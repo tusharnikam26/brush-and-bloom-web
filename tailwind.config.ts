@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom colors for painting services
+				paint: {
+					blue: '#1E3A8A',
+					terracotta: '#E67E22',
+					gray: '#64748B',
+					lightgray: '#F8FAFC',
 				}
 			},
 			borderRadius: {
@@ -84,11 +92,24 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'paint-flow': {
+					'0%': {
+						transform: 'translateX(-100%)'
+					},
+					'100%': {
+						transform: 'translateX(0)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'paint-flow': 'paint-flow 1s ease-out'
+			},
+			backgroundImage: {
+				'paint-gradient': 'linear-gradient(to right, #1E3A8A, #3B82F6)',
+				'hero-pattern': 'url("/hero-bg.jpg")'
 			}
 		}
 	},

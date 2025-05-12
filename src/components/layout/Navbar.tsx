@@ -1,14 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Phone } from 'lucide-react';
+import { Menu, X, Phone, User, LogOut } from 'lucide-react';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,8 +21,22 @@ const Navbar = () => {
       }
     };
 
+    // Check if user is logged in
+    const checkLoginStatus = () => {
+      const user = localStorage.getItem('user');
+      setIsLoggedIn(!!user);
+    };
+
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    checkLoginStatus();
+    
+    // Listen for storage changes (for login/logout)
+    window.addEventListener('storage', checkLoginStatus);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('storage', checkLoginStatus);
+    };
   }, []);
 
   const toggleMenu = () => {
@@ -29,6 +45,12 @@ const Navbar = () => {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    navigate('/');
   };
 
   return (
@@ -60,10 +82,28 @@ const Navbar = () => {
                 <Link to="/services" className="text-paint-gray hover:text-paint-blue font-medium transition-colors">Services</Link>
                 <Link to="/gallery" className="text-paint-gray hover:text-paint-blue font-medium transition-colors">Gallery</Link>
                 <Link to="/contact" className="text-paint-gray hover:text-paint-blue font-medium transition-colors">Contact</Link>
+                <Link to="/color-preview" className="text-paint-gray hover:text-paint-blue font-medium transition-colors">
+                  Color Preview
+                </Link>
               </div>
-              <Button className="btn-secondary">
-                Book Now
-              </Button>
+              {isLoggedIn ? (
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" className="flex items-center gap-2" asChild>
+                    <Link to="/dashboard">
+                      <User size={16} />
+                      Dashboard
+                    </Link>
+                  </Button>
+                  <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
+                    <LogOut size={16} />
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <Button className="btn-secondary" asChild>
+                  <Link to="/login">Login / Register</Link>
+                </Button>
+              )}
             </>
           )}
         </div>
@@ -103,9 +143,40 @@ const Navbar = () => {
             >
               Contact
             </Link>
-            <Button className="btn-secondary w-full">
-              Book Now
-            </Button>
+            <Link to="/color-preview" 
+              className="text-paint-gray hover:text-paint-blue font-medium transition-colors py-2 px-4 hover:bg-gray-50 rounded"
+              onClick={closeMenu}
+            >
+              Color Preview
+            </Link>
+            
+            {isLoggedIn ? (
+              <>
+                <Link to="/dashboard" 
+                  className="text-paint-gray hover:text-paint-blue font-medium transition-colors py-2 px-4 hover:bg-gray-50 rounded flex items-center gap-2"
+                  onClick={closeMenu}
+                >
+                  <User size={16} />
+                  Dashboard
+                </Link>
+                <button 
+                  className="text-left text-paint-gray hover:text-paint-blue font-medium transition-colors py-2 px-4 hover:bg-gray-50 rounded flex items-center gap-2"
+                  onClick={() => {
+                    handleLogout();
+                    closeMenu();
+                  }}
+                >
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Button className="btn-secondary w-full" asChild>
+                <Link to="/login" onClick={closeMenu}>
+                  Login / Register
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       )}

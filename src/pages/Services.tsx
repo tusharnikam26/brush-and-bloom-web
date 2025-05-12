@@ -24,7 +24,7 @@ const Services = () => {
     {
       id: 'exterior',
       title: 'Exterior Painting',
-      description: 'Boost your home's curb appeal while protecting it from the elements.',
+      description: 'Boost your home\'s curb appeal while protecting it from the elements.',
       details: 'Our exterior painting services include proper preparation, premium weather-resistant paints, and meticulous application to ensure a beautiful, long-lasting finish.',
       benefits: [
         'Weather-resistant paints for durability',

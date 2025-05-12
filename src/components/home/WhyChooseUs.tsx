@@ -30,7 +30,7 @@ const features = [
   {
     icon: '👍',
     title: '100% Satisfaction',
-    description: 'We're not finished until you're completely satisfied with our work.'
+    description: 'We\'re not finished until you\'re completely satisfied with our work.'
   }
 ];
 

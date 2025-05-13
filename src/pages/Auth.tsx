@@ -21,6 +21,11 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { toast } from 'sonner';
+import { Shield } from 'lucide-react';
+
+// Admin credentials - in a real app, these would be stored securely in environment variables
+const ADMIN_EMAIL = 'tejasnikam4515@gmail.com';
+const ADMIN_PASSWORD = 'admin@2025';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -41,7 +46,25 @@ const Auth = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // In a real implementation, this would connect to a backend
+    // Check if the credentials match admin credentials
+    if (loginEmail === ADMIN_EMAIL && loginPassword === ADMIN_PASSWORD) {
+      // Admin authentication successful
+      setTimeout(() => {
+        localStorage.setItem('user', JSON.stringify({
+          email: loginEmail,
+          isLoggedIn: true,
+          name: 'Admin User',
+          role: 'admin'
+        }));
+        
+        toast.success("Admin access granted!");
+        navigate('/admin');
+        setIsLoading(false);
+      }, 1000);
+      return;
+    }
+
+    // Regular user authentication
     setTimeout(() => {
       // Mock authentication
       if (loginEmail && loginPassword) {
@@ -49,7 +72,8 @@ const Auth = () => {
         localStorage.setItem('user', JSON.stringify({
           email: loginEmail,
           isLoggedIn: true,
-          name: 'Demo User' // In a real app, this would come from the backend
+          name: 'Demo User', // In a real app, this would come from the backend
+          role: 'user'
         }));
         
         toast.success("Login successful!");
@@ -87,6 +111,7 @@ const Auth = () => {
         email: registerEmail,
         name: name,
         isLoggedIn: true,
+        role: 'user'
       }));
       
       toast.success("Account created successfully!");
@@ -110,10 +135,15 @@ const Auth = () => {
               <TabsContent value="login">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Login to Your Account</CardTitle>
-                    <CardDescription>
-                      Enter your email and password to access your account
-                    </CardDescription>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle>Login to Your Account</CardTitle>
+                        <CardDescription>
+                          Enter your email and password to access your account
+                        </CardDescription>
+                      </div>
+                      <Shield className="h-5 w-5 text-paint-blue" />
+                    </div>
                   </CardHeader>
                   <form onSubmit={handleLogin}>
                     <CardContent className="space-y-4">

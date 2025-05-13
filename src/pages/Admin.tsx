@@ -18,36 +18,55 @@ import {
   Plus, 
   Edit, 
   Trash, 
-  Search
+  Search,
+  ShieldCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-const Admin = () => {
+// Create a custom hook to check admin status
+const useAdminCheck = () => {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Check if user is logged in and is an admin
     const checkAdmin = () => {
       setIsLoading(true);
-      const user = localStorage.getItem('user');
+      const userString = localStorage.getItem('user');
       
-      // In a real app, this would verify admin status from a backend
-      setTimeout(() => {
-        if (user) {
-          // Mock admin check - in a real app this would check a role property
+      if (!userString) {
+        setIsAdmin(false);
+        navigate('/login');
+        setIsLoading(false);
+        return;
+      }
+      
+      try {
+        const user = JSON.parse(userString);
+        if (user?.role === 'admin') {
           setIsAdmin(true);
         } else {
           setIsAdmin(false);
+          toast.error("Admin access required");
           navigate('/login');
         }
-        setIsLoading(false);
-      }, 1000);
+      } catch (error) {
+        setIsAdmin(false);
+        navigate('/login');
+      }
+      
+      setIsLoading(false);
     };
     
     checkAdmin();
   }, [navigate]);
+  
+  return { isAdmin, isLoading };
+};
+
+const Admin = () => {
+  const navigate = useNavigate();
+  const { isAdmin, isLoading } = useAdminCheck();
   
   if (isLoading) {
     return (
@@ -90,8 +109,13 @@ const Admin = () => {
       <Navbar />
       <main className="pt-32 pb-16">
         <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold text-paint-blue mb-2">Admin Dashboard</h1>
-          <p className="text-paint-gray mb-8">Manage your website content, services, and customer interactions</p>
+          <div className="flex items-center mb-6">
+            <ShieldCheck className="h-8 w-8 text-paint-blue mr-3" />
+            <div>
+              <h1 className="text-3xl font-bold text-paint-blue">Admin Dashboard</h1>
+              <p className="text-paint-gray">Manage your website content, services, and customer interactions</p>
+            </div>
+          </div>
           
           <Tabs defaultValue="blog" className="space-y-6">
             <TabsList className="grid grid-cols-3 md:grid-cols-7">

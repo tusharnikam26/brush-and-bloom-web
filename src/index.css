@@ -69,4 +69,90 @@
   .card {
     @apply bg-white rounded-lg shadow-lg overflow-hidden transition-transform duration-300 hover:shadow-xl;
   }
+  
+  /* Paint drip animation */
+  .paint-drip {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background-image: 
+      repeating-linear-gradient(
+        to right,
+        transparent,
+        transparent 20px,
+        #E67E22 20px,
+        #E67E22 25px,
+        transparent 25px,
+        transparent 35px,
+        #1E3A8A 35px,
+        #1E3A8A 40px,
+        transparent 40px,
+        transparent 50px
+      );
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3));
+  }
+  
+  .paint-drip::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background-image: 
+      repeating-linear-gradient(
+        to right,
+        transparent,
+        transparent 20px,
+        #E67E22 20px,
+        #E67E22 25px,
+        #E67E22 25px,
+        #E67E22 25px,
+        #E67E22 25px,
+        #E67E22 25px,
+        transparent 25px,
+        transparent 35px,
+        #1E3A8A 35px,
+        #1E3A8A 40px,
+        #1E3A8A 40px,
+        #1E3A8A 40px,
+        #1E3A8A 40px,
+        transparent 40px,
+        transparent 50px
+      ),
+      repeating-radial-gradient(
+        circle at top,
+        #E67E22 0px,
+        #E67E22 2px,
+        transparent 2px,
+        transparent 4px
+      ),
+      repeating-radial-gradient(
+        circle at top,
+        #1E3A8A 0px,
+        #1E3A8A 2px,
+        transparent 2px,
+        transparent 4px
+      );
+    background-size: 100% 100%, 50px 20px, 50px 20px;
+    background-position: 0 0, 20px 0, 35px 0;
+    animation: drip 4s infinite;
+  }
+  
+  @keyframes drip {
+    0% {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    50% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+  }
 }

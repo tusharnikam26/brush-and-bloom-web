@@ -1,15 +1,54 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useHeroImages } from '@/services/dataService';
 
 const Hero = () => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [fadeIn, setFadeIn] = useState(true);
+  
+  // Fetch hero images from the data service
+  const { data: projectImages = [], isLoading } = useHeroImages();
+  
+  // Image rotation effect
+  useEffect(() => {
+    if (projectImages.length === 0) return;
+    
+    const intervalId = setInterval(() => {
+      setFadeIn(false);
+      
+      setTimeout(() => {
+        setCurrentImageIndex((prevIndex) => 
+          prevIndex === projectImages.length - 1 ? 0 : prevIndex + 1
+        );
+        setFadeIn(true);
+      }, 1000); // Wait for fade out before changing image
+      
+    }, 5000); // Change image every 5 seconds
+    
+    return () => clearInterval(intervalId);
+  }, [projectImages]);
+
+  // Default image if data is loading or not available
+  const currentImage = isLoading || projectImages.length === 0 
+    ? 'https://images.unsplash.com/photo-1562259929-b4e1fd3aef09' 
+    : projectImages[currentImageIndex];
+
   return (
-    <section className="relative bg-paint-blue text-white min-h-[80vh] flex items-center">
-      {/* Background Pattern */}
+    <section className="relative bg-paint-blue text-white min-h-[80vh] flex items-center overflow-hidden">
+      {/* Paint drip animation */}
+      <div className="absolute top-0 left-0 w-full h-20 z-10 overflow-hidden">
+        <div className="paint-drip"></div>
+      </div>
+      
+      {/* Background Image with Fade Transition */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute w-full h-full bg-[url('https://images.unsplash.com/photo-1562259929-b4e1fd3aef09')] bg-cover bg-center opacity-20"></div>
+        <div 
+          className={`absolute w-full h-full bg-cover bg-center transition-opacity duration-1000 ${fadeIn ? 'opacity-20' : 'opacity-0'}`}
+          style={{ backgroundImage: `url('${currentImage}')` }}
+        ></div>
         <div className="absolute inset-0 bg-gradient-to-r from-paint-blue via-paint-blue/90 to-transparent"></div>
       </div>
       
@@ -30,7 +69,11 @@ const Hero = () => {
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
-            <Button variant="outline" className="bg-transparent border-white text-white hover:bg-white/10" asChild>
+            <Button 
+              variant="outline" 
+              className="bg-transparent border-white text-white hover:bg-white/10 shadow-[0_0_10px_rgba(0,0,0,0.2)]" 
+              asChild
+            >
               <Link to="/services">
                 Explore Services
               </Link>

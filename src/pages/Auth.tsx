@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -23,6 +22,7 @@ import {
 import { toast } from 'sonner';
 import { AlertCircle, Shield } from 'lucide-react';
 import { login } from '@/utils/authUtils';
+import { useAuth } from '@/hooks/useAuth';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -30,6 +30,7 @@ const Auth = () => {
   const isLoginPage = location.pathname === '/login';
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const { navigateToDashboard } = useAuth();
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
@@ -52,13 +53,8 @@ const Auth = () => {
       const user = login(loginEmail, loginPassword);
       
       if (user) {
-        if (user.role === 'admin') {
-          toast.success("Login successful!");
-          navigate('/admin');
-        } else {
-          toast.success("Login successful!");
-          navigate('/dashboard');
-        }
+        toast.success("Login successful!");
+        navigateToDashboard();
       } else {
         setErrorMessage("Invalid email or password");
       }
@@ -97,7 +93,7 @@ const Auth = () => {
       }));
       
       toast.success("Account created successfully!");
-      navigate('/dashboard');
+      navigateToDashboard();
       setIsLoading(false);
     }, 1500);
   };

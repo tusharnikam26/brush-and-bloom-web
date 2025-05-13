@@ -12,6 +12,7 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import Admin from "./pages/Admin";
 import ColorPreview from "./pages/ColorPreview";
 import BookService from "./pages/BookService";
 import Products from "./pages/Products";
@@ -19,22 +20,19 @@ import ProjectsNearby from "./pages/ProjectsNearby";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Testimonials from "./pages/Testimonials";
-import Admin from "./pages/Admin";
 import { isAdmin, isLoggedIn } from "./utils/authUtils";
 
-// Protected route component
-const ProtectedRoute = ({ children, adminOnly = false }: { children: React.ReactNode, adminOnly?: boolean }) => {
-  // Check if user is logged in
+// Protected route component for regular users
+const UserRoute = ({ children }: { children: React.ReactNode }) => {
   const userLoggedIn = isLoggedIn();
-  
-  // For admin routes, check if user is both logged in and an admin
-  if (adminOnly) {
-    const userIsAdmin = isAdmin();
-    return userLoggedIn && userIsAdmin ? <>{children}</> : <Navigate to="/login" />;
-  }
-  
-  // For regular protected routes, just check if user is logged in
   return userLoggedIn ? <>{children}</> : <Navigate to="/login" />;
+};
+
+// Protected route specifically for admin users
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const userLoggedIn = isLoggedIn();
+  const userIsAdmin = isAdmin();
+  return userLoggedIn && userIsAdmin ? <>{children}</> : <Navigate to="/login" />;
 };
 
 const queryClient = new QueryClient();
@@ -54,9 +52,9 @@ const App = () => (
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
           <Route path="/dashboard" element={
-            <ProtectedRoute>
+            <UserRoute>
               <Dashboard />
-            </ProtectedRoute>
+            </UserRoute>
           } />
           <Route path="/color-preview" element={<ColorPreview />} />
           <Route path="/book-service" element={<BookService />} />
@@ -66,9 +64,9 @@ const App = () => (
           <Route path="/blog/:id" element={<BlogPost />} />
           <Route path="/testimonials" element={<Testimonials />} />
           <Route path="/admin" element={
-            <ProtectedRoute adminOnly={true}>
+            <AdminRoute>
               <Admin />
-            </ProtectedRoute>
+            </AdminRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

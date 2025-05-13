@@ -36,11 +36,21 @@ export function useAuth() {
     return true;
   };
 
+  // Specifically navigate users to the correct dashboard based on role
+  const navigateToDashboard = () => {
+    if (isAdmin()) {
+      navigate('/admin');
+    } else {
+      navigate('/dashboard');
+    }
+  };
+
   return { 
     user, 
     loading, 
     isLoggedIn: isLoggedIn(),
     isAdmin: isAdmin(),
-    checkAdminAccess
+    checkAdminAccess,
+    navigateToDashboard
   };
 }

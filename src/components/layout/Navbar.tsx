@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Phone, User, LogOut, ShoppingCart } from 'lucide-react';
+import { Menu, X, User, LogOut, ShoppingCart } from 'lucide-react';
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -12,12 +11,14 @@ import {
   NavigationMenuContent,
   NavigationMenuLink
 } from "@/components/ui/navigation-menu";
+import { isAdmin } from '@/utils/authUtils';
 import { cn } from '@/lib/utils';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userIsAdmin, setUserIsAdmin] = useState(false);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
@@ -30,10 +31,16 @@ const Navbar = () => {
       }
     };
 
-    // Check if user is logged in
+    // Check if user is logged in and admin status
     const checkLoginStatus = () => {
       const user = localStorage.getItem('user');
       setIsLoggedIn(!!user);
+      
+      if (user) {
+        setUserIsAdmin(isAdmin());
+      } else {
+        setUserIsAdmin(false);
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -59,8 +66,12 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem('user');
     setIsLoggedIn(false);
+    setUserIsAdmin(false);
     navigate('/');
   };
+
+  const dashboardLink = userIsAdmin ? "/admin" : "/dashboard";
+  const dashboardLabel = userIsAdmin ? "Admin Dashboard" : "Dashboard";
 
   return (
     <nav 
@@ -74,11 +85,6 @@ const Navbar = () => {
         </Link>
 
         <div className="flex items-center gap-4">
-          <a href="tel:+1234567890" className="hidden md:flex items-center text-paint-blue font-medium">
-            <Phone className="h-5 w-5 mr-2" />
-            <span>(123) 456-7890</span>
-          </a>
-
           {isMobile ? (
             <button onClick={toggleMenu} className="text-paint-blue hover:text-paint-terracotta focus:outline-none">
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -144,9 +150,9 @@ const Navbar = () => {
                 {isLoggedIn ? (
                   <div className="flex items-center gap-2">
                     <Button variant="outline" className="flex items-center gap-2" asChild>
-                      <Link to="/dashboard">
+                      <Link to={dashboardLink}>
                         <User size={16} />
-                        Dashboard
+                        {dashboardLabel}
                       </Link>
                     </Button>
                     <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
@@ -181,6 +187,7 @@ const Navbar = () => {
             >
               About
             </Link>
+            
             <div className="py-2 px-4">
               <div className="font-medium mb-1">Services</div>
               <div className="pl-4 flex flex-col gap-1">
@@ -267,12 +274,12 @@ const Navbar = () => {
             
             {isLoggedIn ? (
               <>
-                <Link to="/dashboard" 
+                <Link to={dashboardLink}
                   className="text-paint-gray hover:text-paint-blue font-medium transition-colors py-2 px-4 hover:bg-gray-50 rounded flex items-center gap-2"
                   onClick={closeMenu}
                 >
                   <User size={16} />
-                  Dashboard
+                  {dashboardLabel}
                 </Link>
                 <button 
                   className="text-left text-paint-gray hover:text-paint-blue font-medium transition-colors py-2 px-4 hover:bg-gray-50 rounded flex items-center gap-2"

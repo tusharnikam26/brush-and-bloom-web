@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -21,11 +21,8 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Shield, AlertCircle } from 'lucide-react';
-
-// Admin credentials - in a real app, these would be stored securely in environment variables
-const ADMIN_EMAIL = 'tejasnikam4515@gmail.com';
-const ADMIN_PASSWORD = 'admin@2025';
+import { AlertCircle, Shield } from 'lucide-react';
+import { login } from '@/utils/authUtils';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -50,40 +47,20 @@ const Auth = () => {
     setIsLoading(true);
     setErrorMessage('');
 
-    // Check if the credentials match admin credentials
-    if (loginEmail === ADMIN_EMAIL && loginPassword === ADMIN_PASSWORD) {
-      // Admin authentication successful
-      setTimeout(() => {
-        localStorage.setItem('user', JSON.stringify({
-          email: loginEmail,
-          isLoggedIn: true,
-          name: 'Admin User',
-          role: 'admin'
-        }));
-        
-        toast.success("Admin access granted!");
-        navigate('/admin');
-        setIsLoading(false);
-      }, 1000);
-      return;
-    }
-
-    // Regular user authentication
     setTimeout(() => {
-      // Mock authentication
-      if (loginEmail && loginPassword) {
-        // Store user info in localStorage (this is just for demo purposes)
-        localStorage.setItem('user', JSON.stringify({
-          email: loginEmail,
-          isLoggedIn: true,
-          name: 'Demo User', // In a real app, this would come from the backend
-          role: 'user'
-        }));
-        
-        toast.success("Login successful!");
-        navigate('/dashboard');
+      // Use the enhanced login function
+      const user = login(loginEmail, loginPassword);
+      
+      if (user) {
+        if (user.role === 'admin') {
+          toast.success("Login successful!");
+          navigate('/admin');
+        } else {
+          toast.success("Login successful!");
+          navigate('/dashboard');
+        }
       } else {
-        setErrorMessage("Please provide both email and password");
+        setErrorMessage("Invalid email or password");
       }
       
       setIsLoading(false);
@@ -195,15 +172,6 @@ const Auth = () => {
                     </CardFooter>
                   </form>
                 </Card>
-
-                <div className="mt-4 p-4 border border-blue-100 bg-blue-50 rounded-md">
-                  <h3 className="text-sm font-semibold text-blue-700">Admin Access</h3>
-                  <p className="text-xs text-blue-600 mt-1">
-                    To access the admin dashboard, use these credentials:
-                    <br />Email: tejasnikam4515@gmail.com
-                    <br />Password: admin@2025
-                  </p>
-                </div>
               </TabsContent>
               
               <TabsContent value="register">

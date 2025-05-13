@@ -10,8 +10,12 @@ const Hero = () => {
       {/* Static background image */}
       <div className="absolute inset-0 overflow-hidden">
         <div 
-          className="absolute w-full h-full bg-cover bg-center opacity-20"
-          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1562259929-b4e1fd3aef09")' }}
+          className="absolute w-full h-full bg-cover bg-center"
+          style={{ 
+            backgroundImage: 'url("https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=2070&auto=format&fit=crop")', 
+            backgroundPosition: 'center 30%',
+            opacity: 0.4
+          }}
         ></div>
         <div className="absolute inset-0 bg-gradient-to-r from-paint-blue via-paint-blue/90 to-transparent"></div>
       </div>

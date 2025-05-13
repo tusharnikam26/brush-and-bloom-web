@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Shield } from 'lucide-react';
+import { Shield, AlertCircle } from 'lucide-react';
 
 // Admin credentials - in a real app, these would be stored securely in environment variables
 const ADMIN_EMAIL = 'tejasnikam4515@gmail.com';
@@ -29,7 +29,10 @@ const ADMIN_PASSWORD = 'admin@2025';
 
 const Auth = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState('');
@@ -45,6 +48,7 @@ const Auth = () => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage('');
 
     // Check if the credentials match admin credentials
     if (loginEmail === ADMIN_EMAIL && loginPassword === ADMIN_PASSWORD) {
@@ -79,7 +83,7 @@ const Auth = () => {
         toast.success("Login successful!");
         navigate('/dashboard');
       } else {
-        toast.error("Please provide both email and password");
+        setErrorMessage("Please provide both email and password");
       }
       
       setIsLoading(false);
@@ -90,16 +94,17 @@ const Auth = () => {
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage('');
 
     // Validate form
     if (!name || !registerEmail || !registerPassword || !confirmPassword) {
-      toast.error("Please fill in all fields");
+      setErrorMessage("Please fill in all fields");
       setIsLoading(false);
       return;
     }
 
     if (registerPassword !== confirmPassword) {
-      toast.error("Passwords do not match");
+      setErrorMessage("Passwords do not match");
       setIsLoading(false);
       return;
     }
@@ -126,7 +131,7 @@ const Auth = () => {
       <main className="pt-32 pb-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto">
-            <Tabs defaultValue="login">
+            <Tabs defaultValue={isLoginPage ? "login" : "register"}>
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="register">Register</TabsTrigger>
@@ -146,6 +151,12 @@ const Auth = () => {
                     </div>
                   </CardHeader>
                   <form onSubmit={handleLogin}>
+                    {errorMessage && (
+                      <div className="mx-6 -mt-2 mb-4 bg-red-50 p-3 rounded-md text-sm text-red-600 flex items-center">
+                        <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
+                        {errorMessage}
+                      </div>
+                    )}
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="email">Email</Label>
@@ -184,6 +195,15 @@ const Auth = () => {
                     </CardFooter>
                   </form>
                 </Card>
+
+                <div className="mt-4 p-4 border border-blue-100 bg-blue-50 rounded-md">
+                  <h3 className="text-sm font-semibold text-blue-700">Admin Access</h3>
+                  <p className="text-xs text-blue-600 mt-1">
+                    To access the admin dashboard, use these credentials:
+                    <br />Email: tejasnikam4515@gmail.com
+                    <br />Password: admin@2025
+                  </p>
+                </div>
               </TabsContent>
               
               <TabsContent value="register">
@@ -195,6 +215,12 @@ const Auth = () => {
                     </CardDescription>
                   </CardHeader>
                   <form onSubmit={handleRegister}>
+                    {errorMessage && (
+                      <div className="mx-6 -mt-2 mb-4 bg-red-50 p-3 rounded-md text-sm text-red-600 flex items-center">
+                        <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
+                        {errorMessage}
+                      </div>
+                    )}
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="name">Full Name</Label>

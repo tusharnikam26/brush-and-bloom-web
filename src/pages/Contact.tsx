@@ -1,22 +1,65 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { sendEmailViaMailto } from '@/utils/emailUtils';
 
 const Contact = () => {
   const { toast } = useToast();
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    service: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast({
-      title: "Message Sent!",
-      description: "We've received your message and will contact you soon.",
-    });
-    // Reset form
-    (e.target as HTMLFormElement).reset();
+    setIsSubmitting(true);
+    
+    try {
+      // Send the email using our utility function
+      sendEmailViaMailto(
+        formData, 
+        'tejxcoder0.1@gmail.com',
+        `New Contact Form Submission from ${formData.name}`
+      );
+      
+      // Reset the form
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        service: '',
+        message: ''
+      });
+      
+      toast({
+        title: "Message Sent!",
+        description: "We've received your message and will contact you soon.",
+      });
+    } catch (error) {
+      console.error('Error sending form:', error);
+      toast({
+        title: "Error",
+        description: "There was a problem sending your message. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -56,6 +99,8 @@ const Contact = () => {
                       name="name"
                       className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-paint-blue"
                       placeholder="John Doe"
+                      value={formData.name}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
@@ -67,6 +112,8 @@ const Contact = () => {
                       name="phone"
                       className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-paint-blue"
                       placeholder="(123) 456-7890"
+                      value={formData.phone}
+                      onChange={handleInputChange}
                       required
                     />
                   </div>
@@ -80,6 +127,8 @@ const Contact = () => {
                     name="email"
                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-paint-blue"
                     placeholder="johndoe@example.com"
+                    value={formData.email}
+                    onChange={handleInputChange}
                     required
                   />
                 </div>
@@ -90,6 +139,8 @@ const Contact = () => {
                     id="service"
                     name="service"
                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-paint-blue"
+                    value={formData.service}
+                    onChange={handleInputChange}
                     required
                   >
                     <option value="">Select a service</option>
@@ -111,12 +162,14 @@ const Contact = () => {
                     rows={5}
                     className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-paint-blue"
                     placeholder="Tell us about your project..."
+                    value={formData.message}
+                    onChange={handleInputChange}
                     required
                   ></textarea>
                 </div>
                 
-                <Button type="submit" className="btn-primary">
-                  Send Message
+                <Button type="submit" className="btn-primary" disabled={isSubmitting}>
+                  {isSubmitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </form>
             </div>

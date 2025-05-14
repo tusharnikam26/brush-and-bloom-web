@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
-import { Menu, X, User, LogOut, ShoppingCart } from 'lucide-react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -11,16 +11,12 @@ import {
   NavigationMenuContent,
   NavigationMenuLink
 } from "@/components/ui/navigation-menu";
-import { isAdmin } from '@/utils/authUtils';
 import { cn } from '@/lib/utils';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userIsAdmin, setUserIsAdmin] = useState(false);
   const isMobile = useIsMobile();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,27 +27,10 @@ const Navbar = () => {
       }
     };
 
-    // Check if user is logged in and admin status
-    const checkLoginStatus = () => {
-      const user = localStorage.getItem('user');
-      setIsLoggedIn(!!user);
-      
-      if (user) {
-        setUserIsAdmin(isAdmin());
-      } else {
-        setUserIsAdmin(false);
-      }
-    };
-
     window.addEventListener('scroll', handleScroll);
-    checkLoginStatus();
-    
-    // Listen for storage changes (for login/logout)
-    window.addEventListener('storage', checkLoginStatus);
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('storage', checkLoginStatus);
     };
   }, []);
 
@@ -62,16 +41,6 @@ const Navbar = () => {
   const closeMenu = () => {
     setIsMenuOpen(false);
   };
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    setIsLoggedIn(false);
-    setUserIsAdmin(false);
-    navigate('/');
-  };
-
-  const dashboardLink = userIsAdmin ? "/admin" : "/dashboard";
-  const dashboardLabel = userIsAdmin ? "Admin Dashboard" : "Dashboard";
 
   return (
     <nav 
@@ -146,25 +115,6 @@ const Navbar = () => {
                     <ShoppingCart className="h-[1.2rem] w-[1.2rem]" />
                   </Button>
                 </Link>
-                
-                {isLoggedIn ? (
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" className="flex items-center gap-2" asChild>
-                      <Link to={dashboardLink}>
-                        <User size={16} />
-                        {dashboardLabel}
-                      </Link>
-                    </Button>
-                    <Button variant="outline" className="flex items-center gap-2" onClick={handleLogout}>
-                      <LogOut size={16} />
-                      Logout
-                    </Button>
-                  </div>
-                ) : (
-                  <Button className="btn-secondary" asChild>
-                    <Link to="/login">Login / Register</Link>
-                  </Button>
-                )}
               </div>
             </>
           )}
@@ -271,34 +221,6 @@ const Navbar = () => {
             >
               Contact
             </Link>
-            
-            {isLoggedIn ? (
-              <>
-                <Link to={dashboardLink}
-                  className="text-paint-gray hover:text-paint-blue font-medium transition-colors py-2 px-4 hover:bg-gray-50 rounded flex items-center gap-2"
-                  onClick={closeMenu}
-                >
-                  <User size={16} />
-                  {dashboardLabel}
-                </Link>
-                <button 
-                  className="text-left text-paint-gray hover:text-paint-blue font-medium transition-colors py-2 px-4 hover:bg-gray-50 rounded flex items-center gap-2"
-                  onClick={() => {
-                    handleLogout();
-                    closeMenu();
-                  }}
-                >
-                  <LogOut size={16} />
-                  Logout
-                </button>
-              </>
-            ) : (
-              <Button className="btn-secondary w-full" asChild>
-                <Link to="/login" onClick={closeMenu}>
-                  Login / Register
-                </Link>
-              </Button>
-            )}
           </div>
         </div>
       )}

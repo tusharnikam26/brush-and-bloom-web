@@ -9,8 +9,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Heart, Star, Filter, Search, Check } from 'lucide-react';
+import { ShoppingCart, Heart, Star, Filter, Search, Check, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import { redirectToWhatsApp } from '@/utils/whatsAppUtils';
 
 // Mock data for products
 const products = [
@@ -118,6 +119,9 @@ const Products = () => {
   const [priceRange, setPriceRange] = useState([20, 80]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('popularity');
+  const [productQuantities, setProductQuantities] = useState<Record<number, number>>(
+    products.reduce((acc, product) => ({...acc, [product.id]: 1}), {})
+  );
 
   const filteredProducts = products.filter(product => {
     const matchesType = selectedType === 'all' || product.type === selectedType;
@@ -149,6 +153,21 @@ const Products = () => {
 
   const handleAddToWishlist = () => {
     toast("Added to wishlist");
+  };
+
+  const handleBuyNow = (productId: number) => {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      const quantity = productQuantities[productId] || 1;
+      redirectToWhatsApp(product, quantity);
+    }
+  };
+
+  const updateQuantity = (productId: number, value: number) => {
+    setProductQuantities({
+      ...productQuantities,
+      [productId]: Math.max(1, value) // Ensure quantity is at least 1
+    });
   };
 
   return (
@@ -351,13 +370,50 @@ const Products = () => {
                           )}
                         </div>
                       </div>
+                      
+                      <div className="mt-4 flex items-center">
+                        <Label htmlFor={`quantity-${product.id}`} className="mr-2">Quantity:</Label>
+                        <div className="flex items-center">
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-8 w-8 rounded-r-none"
+                            onClick={() => updateQuantity(product.id, (productQuantities[product.id] || 1) - 1)}
+                          >
+                            -
+                          </Button>
+                          <Input
+                            id={`quantity-${product.id}`}
+                            type="number"
+                            min="1"
+                            className="h-8 w-12 rounded-none text-center"
+                            value={productQuantities[product.id] || 1}
+                            onChange={(e) => updateQuantity(product.id, parseInt(e.target.value) || 1)}
+                          />
+                          <Button 
+                            variant="outline" 
+                            size="icon" 
+                            className="h-8 w-8 rounded-l-none"
+                            onClick={() => updateQuantity(product.id, (productQuantities[product.id] || 1) + 1)}
+                          >
+                            +
+                          </Button>
+                        </div>
+                      </div>
                     </CardContent>
                     <CardFooter className="flex gap-2">
-                      <Button onClick={() => handleAddToCart(product.id)} className="flex-1">
-                        <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+                      <Button 
+                        onClick={() => handleBuyNow(product.id)} 
+                        className="flex-1 bg-paint-terracotta hover:bg-paint-terracotta/90"
+                      >
+                        Buy Now <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
-                      <Button variant="outline" size="icon" onClick={handleAddToWishlist}>
-                        <Heart className="h-4 w-4" />
+                      <Button 
+                        variant="outline" 
+                        onClick={() => handleAddToCart(product.id)} 
+                        className="flex-1"
+                      >
+                        <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
                       </Button>
                     </CardFooter>
                   </Card>

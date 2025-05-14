@@ -1,4 +1,3 @@
-
 /**
  * WhatsApp utility functions
  */

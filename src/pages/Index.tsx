@@ -7,6 +7,7 @@ import ServicesPreview from '@/components/home/ServicesPreview';
 import Testimonials from '@/components/home/Testimonials';
 import CTASection from '@/components/home/CTASection';
 import WhyChooseUs from '@/components/home/WhyChooseUs';
+import HousePaintingSection from '@/components/home/HousePaintingSection';
 
 const Index = () => {
   return (
@@ -15,6 +16,7 @@ const Index = () => {
       <main>
         <Hero />
         <ServicesPreview />
+        <HousePaintingSection />
         <WhyChooseUs />
         <Testimonials />
         <CTASection />

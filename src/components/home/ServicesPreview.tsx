@@ -2,33 +2,33 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, PaintBucket, Brush, BuildingIcon, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const serviceData = [
   {
     title: 'Interior Painting',
     description: 'Professional interior painting services for a fresh, new look in any room of your home.',
-    icon: '🏠',
+    icon: <Brush className="h-10 w-10 text-paint-blue" />,
     link: '/services#interior'
   },
   {
     title: 'Exterior Painting',
     description: 'Protect your property from the elements while enhancing curb appeal with our exterior painting.',
-    icon: '🏡',
+    icon: <PaintBucket className="h-10 w-10 text-paint-blue" />,
     link: '/services#exterior'
   },
   {
     title: 'Commercial Painting',
     description: 'Create the right impression for your business with our commercial painting solutions.',
-    icon: '🏢',
+    icon: <BuildingIcon className="h-10 w-10 text-paint-blue" />,
     link: '/services#commercial'
   },
   {
-    title: 'Color Consultation',
-    description: 'Expert color advice to help you choose the perfect palette for your space.',
-    icon: '🎨',
-    link: '/services#consultation'
+    title: 'Residential Painting',
+    description: 'Transform your home with our premium residential painting services, tailored to your style.',
+    icon: <Home className="h-10 w-10 text-paint-blue" />,
+    link: '/services#residential'
   }
 ];
 
@@ -48,7 +48,7 @@ const ServicesPreview = () => {
           {serviceData.map((service, index) => (
             <Card key={index} className="border-t-4 border-t-paint-blue hover:-translate-y-1 transition-transform duration-300">
               <CardHeader>
-                <div className="text-4xl mb-4">{service.icon}</div>
+                <div className="mb-4">{service.icon}</div>
                 <CardTitle>{service.title}</CardTitle>
               </CardHeader>
               <CardContent>

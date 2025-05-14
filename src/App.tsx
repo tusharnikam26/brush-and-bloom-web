@@ -17,6 +17,9 @@ import ProjectsNearby from "./pages/ProjectsNearby";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Testimonials from "./pages/Testimonials";
+import AddBlog from "./pages/AddBlog";
+import AddProduct from "./pages/AddProduct";
+import AddGallery from "./pages/AddGallery";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +42,12 @@ const App = () => (
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<BlogPost />} />
           <Route path="/testimonials" element={<Testimonials />} />
+          
+          {/* Static content management routes */}
+          <Route path="/addblog" element={<AddBlog />} />
+          <Route path="/addproduct" element={<AddProduct />} />
+          <Route path="/addgallery" element={<AddGallery />} />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
